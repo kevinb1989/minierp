@@ -1,5 +1,7 @@
 # Mini Erp
 
+The project is hosted in forge at http://128.199.240.188.
+
 ## Installation Guide
 - create an empty mysql database
 - configure database info in the .env file, please set the MAIL_DRIVER to log
@@ -10,7 +12,7 @@ app/database/testing_minierp.sqlite file.
 ## Create a new order
 
 In order to create a new order via a json request, you may use Chrome Advanced REST client.
-Please send a POST application/json request to 'orders' route.
+Please send a POST application/json request to 'orders' route (or http://128.199.240.188/orders).
 
 Unfortunately, I have a problem validating the body of the request against a json schema.
 So the pattern of a request body has to match exactly the schema given in the technical test specs.
