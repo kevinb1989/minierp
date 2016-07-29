@@ -26,7 +26,7 @@ class ProductRepository{
 	 * @return Illuminate\Database\Eloquent\Collection
 	 */
 	public function getAllProducts(){
-		return $this->products->all();
+		return $this->products->latest()->get();
 	}
 
 	/**
@@ -58,5 +58,26 @@ class ProductRepository{
 	 */
 	public function findProductBySku($sku){
 		return $this->products->where('sku', $sku)->first();
+	}
+
+	/**
+	 * Retrieve a product by its id
+	 * 
+	 * @param  int $id
+	 * @return MiniErp\Entities\Product
+	 */
+	public function findProductById($id){
+		return $this->products->find($id);
+	}
+
+	/**
+	 * Retrieve an associative array,
+	 * the key is product id and the name is sku.
+	 * We need to retrieve this list when we want to create a new item
+	 * 
+	 * @return array
+	 */
+	public function getAllProductNames(){
+		return $this->products->lists('sku', 'id');
 	}
 }

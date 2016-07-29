@@ -12,36 +12,11 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
 
-Route::get('/array-to-json', function(){
-	$input = [
-    		'order' => [
-    			'customer_name' => 'Gabriel Jaramillo',
-    			'address' => 'test_address',
-    			'total' => 100,
-    			'items' => [
-    				['sku' => 'testsku1', 'quantity' => 2],
-    				['sku' => 'testsku2', 'quantity' => 1]
-    			] 
-    		]
-    ];
+Route::resource('products', 'ProductsController');
 
-    dd(json_encode($input));
-});
+Route::resource('items', 'ItemsController');
 
-Route::get('/array-shift', function(){
-	$items = [
-        ['sku' => 'productsku01', 'quantity' => 2],
-        ['sku' => 'productsku02', 'quantity' => 4]
-    ];
-
-    $skuList = "";
-
-    while($item = array_shift($items)){
-        $skuList .= ' ' . $item['sku'] ;
-    }
-
-    dd($skuList);
-});
+Route::resource('orders', 'OrdersController');

@@ -14,6 +14,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Item extends Model
 {
+	/**
+	 * the attributes that are mass assignable
+	 * 
+	 * @var array
+	 */
 	protected $fillable = ['order_id', 'product_id', 'status', 'physical_status'];
 
 	/**
@@ -23,5 +28,14 @@ class Item extends Model
 	 */
     public function product(){
     	return $this->belongsTo(Product::class);
+    }
+
+    /**
+	 * Represent the one-to-many relationship between Order and Item
+	 * 
+	 * @return Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+    public function order(){
+    	return $this->belongsTo(Order::class);
     }
 }

@@ -27,13 +27,7 @@ class OrderRepositoryTest extends TestCase
     /** @test */
     public function it_will_return_a_list_of_all_orders()
     {
-    	
-
-        $this->orders->shouldReceive('with')
-        	->once()
-        	->andReturn($this->builder);
-
-        $this->builder->shouldReceive('get')->once();
+        $this->orders->shouldReceive('all')->once();
 
         $orderList = $this->orderRepo->getAllOrders();
     }
@@ -53,23 +47,6 @@ class OrderRepositoryTest extends TestCase
             ->with($orderId);
 
         $orderList = $this->orderRepo->getOrder($orderId);
-    }
-
-    /** @test */
-    public function it_will_change_the_status_of_the_order(){
-        $input = [
-            'id' => 1,
-            'status' => 'Completed'
-        ];
-
-        $this->orders->shouldReceive('where')
-            ->once()
-            ->with('id', $input['id'])
-            ->andReturn($this->builder);
-
-        $this->builder->shouldReceive('update')->once();
-
-        $this->orderRepo->changeStatus($input);
     }
 
     /** @test */

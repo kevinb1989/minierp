@@ -30,7 +30,7 @@ class OrderProcessorTest extends TestCase
     {
     	$input = [
     		'order' => [
-    			'customer_name' => 'Gabriel Jaramillo',
+    			'customer' => 'Gabriel Jaramillo',
     			'address' => 'test_address',
     			'total' => 100,
     			'items' => [
@@ -47,6 +47,9 @@ class OrderProcessorTest extends TestCase
         $orderArray = array_slice($input['order'], 0, 2);
         //and add the status value to this order
         $orderArray['status'] = 'In progress';
+        //fix the customer name
+        $orderArray['customer_name'] = $orderArray['customer'];
+        unset($orderArray['customer']);
 
         //take the customer_name, address
     	$this->orderRepo->shouldReceive('makeOrder')

@@ -1,28 +1,33 @@
 # Mini Erp
 
 ## Installation Guide
-- create an empty mysql testing database
-- configure the .env file
-- then you are ready to run all the test cases. They currently all pass.
+- create an empty mysql database
+- configure database info in the .env file, please set the MAIL_DRIVER to log
+- run migration and seed the database, the products table will be seeded
+- If you are interested in running all the test cases, please create an
+app/database/testing_minierp.sqlite file.
 
-## What I have done so far
-- All the business logic is included in app/MiniErp folder
-- create repositories classes to operate the database (stored in app/MiniErp/Repositories)
-- create separated classes to process the order
-	- The MiniErp\OrderProcessing\OrderProcessor class persist a new order record
-	and access the MiniErp\OrderProcessing\UpdateOrGenerateOrderItems class
-	- The MiniErp\OrderProcessing\UpdateOrGenerateOrderItems will update or generate items
-	for a newly created order.
+## Create a new order
+
+In order to create a new order via a json request, you may use Chrome Advanced REST client.
+Please send a POST application/json request to 'orders' route.
+
+Unfortunately, I have a problem validating the body of the request against a json schema.
+So the pattern of a request body has to match exactly the schema given in the technical test specs.
+
+## What I have done
+I reckon the project is pretty completed. I have completed all features.
+
+- All the business logic is included and divided in app/MiniErp folder
 - TDD is used all the way. I write unit tests and integration tests with continuous refactoring for almost everything. Check out the tests folder for all the test classes.
+- events to update order status and send emails (emails are simply logged)
+- controllers with injected dependencies
+- UIs using bootstrap and datatables
 
-## What I am gonna do next
-I reckon I have solve the hardest part of this technical test, which is order processing. The rest may take time, but it may be not that challenging. For the rest of the project, I am gonna do pretty 'the Laravel way'.
+## What I can do more to perfect it
+- continue to refactor the business logic
+- BDD with Codeception and Behat
+- Testing email with MailThief and mailtrap.io
+- validate the json request against a json schema.
 
-- add mailing to the business logic
-- create events and event listener classes for mailing and changing order statuses.
-- create jobs to group relevant commands and raise events.
-- add controllers, inject jobs & write user interfaces
-- use Behat for acceptance testing and make more complex scenarios for order processing
-- continue to refactor the order processing logic
-
-I welcome all the feedback and recommendations that you suggest.
+I welcome all the feedback and recommendations that you guys suggest.

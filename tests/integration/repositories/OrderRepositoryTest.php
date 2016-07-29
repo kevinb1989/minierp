@@ -62,32 +62,6 @@ class OrderRepositoryTest extends TestCase
     }
 
     /** @test */
-    public function it_will_change_the_status_of_an_order(){
-		//given
-        $product = factory(Product::class)->create();
-        $orders = factory(Order::class, 2)->create([
-        	'status' => 'In progress'
-        ]);
-        $items = factory(Item::class, 2)->create([
-        	'order_id' => $orders[0]->id
-        ]);
-        $item = factory(Item::class)->create([
-        	'order_id' => $orders[1]->id
-        ]);
-
-        $input = [
-        	'id' => $orders[0]->id,
-        	'status' => 'Completed'
-        ];
-
-        //when
-        $count = $this->orderRepo->changeStatus($input);
-
-        //then
-        $this->seeInDatabase('orders', $input);
-    }
-
-    /** @test */
     public function it_will_create_an_order_record_in_the_database(){
         //given
         $input = [
@@ -101,5 +75,48 @@ class OrderRepositoryTest extends TestCase
 
         $this->seeInDatabase('orders', $input);
         $this->assertEquals($input['customer_name'], $newOrder->customer_name);
+    }
+
+    /** @test */
+    public function it_will_check_if_all_ordered_items_of_an_order_have_been_delivered(){
+        //given
+        $product = factory(Product::class, 3)->create();
+        $order = factory(Order::class)->create([
+            'status' => 'In progress'
+        ]);
+        $items = factory(Item::class, 4)->create([
+            'order_id' => $order->id,
+            'physical_status' => 'Delivered'
+        ]);
+
+        $item = factory(Item::class)->create([
+            'order_id' => $order->id,
+            'physical_status' => 'In warehouse'
+        ]);
+
+        //when
+        $allDelivered = $this->orderRepo->allItemsDelivered($order);
+
+        //then
+        $this->assertFalse($allDelivered);
+    }
+
+    /** @test */
+    public function it_will_change_order_status_to_completed_if_all_order_items_are_delivered(){
+        //given
+        $product = factory(Product::class, 3)->create();
+        $order = factory(Order::class)->create([
+            'status' => 'In progress'
+        ]);
+        $items = factory(Item::class, 4)->create([
+            'order_id' => $order->id,
+            'physical_status' => 'Delivered'
+        ]);
+
+        //when
+        $allDelivered = $this->orderRepo->complete($order);
+
+        //then
+        $this->assertEquals('Completed', $this->orderRepo->getOrder($order->id)->status);
     }
 }

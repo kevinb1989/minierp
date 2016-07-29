@@ -44,10 +44,11 @@ class UpdateOrGenerateOrderItemsTest extends TestCase
         ];
 
         //when
-        $this->updateOrGenerateOrderItems->updateOrGenerateOrderItems($order->id, $items);
+        $newProductsCreated = $this->updateOrGenerateOrderItems->updateOrGenerateOrderItems($order->id, $items);
 
         //then
        	$this->assertEquals(3, Order::find($order->id)->items()->get()->count());
+        $this->assertFalse($newProductsCreated);
     }
 
     /** @test */
@@ -69,11 +70,12 @@ class UpdateOrGenerateOrderItemsTest extends TestCase
         ];
 
         //when
-        $this->updateOrGenerateOrderItems->updateOrGenerateOrderItems($order->id, $items);
+        $newProductsCreated =  $this->updateOrGenerateOrderItems->updateOrGenerateOrderItems($order->id, $items);
 
         //then
         $this->assertEquals(2, Order::find($order->id)->items()->get()->count());
         $this->assertEquals(3, Item::where('status','Available')->get()->count());
+        $this->assertFalse($newProductsCreated);
     }
 
     /** @test */
@@ -94,10 +96,11 @@ class UpdateOrGenerateOrderItemsTest extends TestCase
         ];
 
         //when
-        $this->updateOrGenerateOrderItems->updateOrGenerateOrderItems($order->id, $items);
+        $newProductsCreated = $this->updateOrGenerateOrderItems->updateOrGenerateOrderItems($order->id, $items);
 
         //then
         $this->assertEquals(7, Order::find($order->id)->items()->get()->count());
+        $this->assertFalse($newProductsCreated);
     }
 
     /** @test */
@@ -114,11 +117,12 @@ class UpdateOrGenerateOrderItemsTest extends TestCase
         ];
 
         //when
-        $this->updateOrGenerateOrderItems->updateOrGenerateOrderItems($order->id, $items);
+        $newProductsCreated = $this->updateOrGenerateOrderItems->updateOrGenerateOrderItems($order->id, $items);
 
         //then
         $this->assertEquals(4, Order::find($order->id)->items()->get()->count());
         $this->assertEquals(4, Item::where(['order_id' => $order->id, 'product_id' => $product->id, 'status' => 'Assigned'])->get()->count());
+        $this->assertFalse($newProductsCreated);
     }
 
     /** @test */
@@ -131,11 +135,12 @@ class UpdateOrGenerateOrderItemsTest extends TestCase
         ];
 
         //when
-        $this->updateOrGenerateOrderItems->updateOrGenerateOrderItems($order->id, $items);
+        $newProductsCreated = $this->updateOrGenerateOrderItems->updateOrGenerateOrderItems($order->id, $items);
 
         //then
         $this->assertEquals(4, Order::find($order->id)->items()->get()->count());
         $this->assertEquals(4, Item::where(['order_id' => $order->id, 'status' => 'Assigned'])->get()->count());
+        $this->assertTrue($newProductsCreated);
     }
 
     /** @test */
@@ -149,10 +154,11 @@ class UpdateOrGenerateOrderItemsTest extends TestCase
         ];
 
         //when
-        $this->updateOrGenerateOrderItems->updateOrGenerateOrderItems($order->id, $items);
+        $newProductsCreated = $this->updateOrGenerateOrderItems->updateOrGenerateOrderItems($order->id, $items);
 
         //then
         $this->assertEquals(9, Order::find($order->id)->items()->get()->count());
         $this->assertEquals(9, Item::where(['order_id' => $order->id, 'status' => 'Assigned'])->get()->count());
+        $this->assertTrue($newProductsCreated);
     }
 }

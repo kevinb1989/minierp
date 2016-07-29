@@ -4,6 +4,9 @@ use MiniErp\Repositories\ItemRepository;
 use MiniErp\Repositories\ProductRepository;
 use MiniErp\Entities\Item;
 use MiniErp\Entities\Product;
+use MiniErp\Constants\ItemStatus;
+use MiniErp\Constants\ItemPhysicalStatus;
+use Carbon\Carbon;
 
 /**
  * The UpdateOrGenerateOrderItems class update or generate items
@@ -37,16 +40,21 @@ class UpdateOrGenerateOrderItems{
 	 *  
 	 * @param  int $newOrderId the id of the freshly created order
 	 * @param  array $orderItems the array of demanded items in the new order
+	 * @return boolean whether new products are created or not
 	 */
 	public function updateOrGenerateOrderItems($newOrderId, $orderItems){
 		$allItems = $this->itemRepo->getAllItems();
+
+		//a flag indicates whether new products are created or not
+		//after processing all ordered items
+		$newProductsCreated = false;
 
 		//take the first item from the order
 		while($orderItem = array_shift($orderItems)){
 
 			//retrieve the collection that match the item
 			$matchedItems = $allItems->filter(function($item, $key) use ($orderItem, $newOrderId){
-				return $item->status == "Available" && $item->product->sku == $orderItem['sku'];
+				return $item->status == ItemStatus::Available && $item->product->sku == $orderItem['sku'];
 			});
 
 			//in case there are just enough matched items in the database,
@@ -57,7 +65,7 @@ class UpdateOrGenerateOrderItems{
 			}
 			//in case there are more than enough matched items in the database,
 			//only the required number of items will be updated to the order
-			//the rest will remained availabe
+			//the rest will remained available
 			elseif($matchedItems->count()>$orderItem['quantity']){
 				//redundant items will be cut
 				$matchedItems = $matchedItems->slice(0, $orderItem['quantity']);
@@ -94,12 +102,14 @@ class UpdateOrGenerateOrderItems{
 					]);
 					//Then new items of this product will be generated for the order
 					$this->generateNewOrderItems($product->id, $newOrderId, $orderItem['quantity']);	
+
+					$newProductsCreated = true;
 				}
 				
 			}
 		}
 
-		return $matchedItems->count();
+		return $newProductsCreated;
 	}
 
 
@@ -113,7 +123,7 @@ class UpdateOrGenerateOrderItems{
 	private function updateAllMatchedItems($matchedItems, $newOrderId){
 		return $matchedItems->each(function($item, $key) use ($newOrderId){
 				$item->order_id = $newOrderId;
-				$item->status = 'Assigned';
+				$item->status = ItemStatus::Assigned;
 				$item->save();
 		});
 	}
@@ -132,8 +142,10 @@ class UpdateOrGenerateOrderItems{
 				$newItems[] = [
 					'product_id' => $productId,
 					'order_id' => $newOrderId,
-					'status' => 'Assigned',
-					'physical_status' => 'To order'
+					'status' => ItemStatus::Assigned,
+					'physical_status' => ItemPhysicalStatus::ToOrder,
+					'created_at' => Carbon::now(),
+					'updated_at' => Carbon::now()
 				];
 			}
 

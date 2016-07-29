@@ -5,6 +5,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use MiniErp\Repositories\ItemRepository;
 use MiniErp\Entities\Item;
+use MiniErp\Entities\Order;
 use MiniErp\Entities\Product;
 
 class ItemRepositoryTest extends TestCase
@@ -73,5 +74,20 @@ class ItemRepositoryTest extends TestCase
         //then
         $this->seeInDatabase('items', $input);
         $this->assertEquals(1, $count);
+    }
+
+    /** @test */
+    public function it_will_return_the_order_that_owns_a_specific_item(){
+        //given
+        $product = factory(Product::class)->create();
+        $order = factory(Order::class)->create();
+        $item = factory(Item::class)->create([
+            'order_id' => $order->id,
+            'product_id' => $product->id
+        ]);
+        
+        $order = $this->itemRepo->getOrderFromItem($item->id);
+
+        
     }
 }

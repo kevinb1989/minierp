@@ -38,18 +38,20 @@ class OrderProcessor{
 	 * - update and persist its associated items in items table
 	 * 
 	 * @param  array $input including customer_name, address and a list of items 
-	 * @return [type]        [description]
+	 * @return boolean whether new products are generated due to this order or not
 	 */
 	public function processOrder($input){
 		//extract the customer_name and address from the $input
 		$order = $this->extractOrderInfo($input);
 		$items = $this->extractItems($input);
 
+		//create a new order record in database
 		$newOrder = $this->orderRepo->makeOrder($order);
 		
-		$updated = $this->updateOrGenerateOrderItems->updateOrGenerateOrderItems($newOrder->id, $items);
+		//update and generate items in database to match the newly created order
+		$newProductsCreated = $this->updateOrGenerateOrderItems->updateOrGenerateOrderItems($newOrder->id, $items);
 
-		
+		return $newProductsCreated;
 	}
 
 	/**
@@ -63,6 +65,12 @@ class OrderProcessor{
 		$order = array_slice($input['order'], 0, 2);
 
 		$order['status'] = 'In progress';
+
+		//because the request contains a key named "customer"
+		//whereas the orders table has the customer_name field
+		//we have to fix this
+		$order['customer_name'] = $order['customer'];
+		unset($order['customer']);
 
 		return $order;
 	}

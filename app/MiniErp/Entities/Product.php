@@ -5,7 +5,7 @@ namespace MiniErp\Entities;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * The Product class represent the products table
+ * The Product class represents the products table
  *
  * @category Entities
  * @package MiniErp\Entities
@@ -15,6 +15,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Product extends Model
 {
+	/**
+	 * the attributes that are mass assignable
+	 * 
+	 * @var array
+	 */
     protected $fillable= ['sku', 'colour'];
 
     /**

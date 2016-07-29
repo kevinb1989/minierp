@@ -4,7 +4,7 @@ use MiniErp\Entities\Item;
 
 /**
  * The ItemRepository class manipulates the items table.
- * It accesses some data from the products table.
+ * It accesses some data from the products and orders tables.
  *
  * @category Repositories
  * @package MiniErp\Repositories
@@ -46,5 +46,31 @@ class ItemRepository{
 	 */
 	public function editItem($input){
 		return $this->items->where('id', $input['id'])->update($input);
+	}
+
+	/**
+	 * Retrieve an item by its id for editing
+	 *
+	 * @param int $id
+	 * @return MiniErp\Entities\Item
+	 */
+	public function getItemById($id){
+		return $this->items->find($id);
+	}
+
+	/**
+	 * Retrieve the order that contains a specific item
+	 * 
+	 * @param  int $itemId
+	 * @return MiniErp\Entities\Order
+	 */
+	public function getOrderFromItem($itemId){
+		$collection = $this->items->find($itemId)->order()->get();
+		
+		if(!is_null($collection)){
+			return $collection->first();
+		}
+
+		return null;
 	}
 }

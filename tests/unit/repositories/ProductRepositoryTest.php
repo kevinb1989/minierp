@@ -21,7 +21,13 @@ class ProductRepositoryTest extends TestCase
 	/** @test */
     public function it_will_return_a_list_of_all_products()
     {
-    	$this->products->shouldReceive('all')->once();
+        $builder = Mockery::mock('Illuminate\Database\Query\Builder');
+    	
+        $this->products->shouldReceive('latest')
+            ->once()
+            ->andReturn($builder);
+
+        $builder->shouldReceive('get')->once();
 
     	$productList = $this->productRepo->getAllProducts();
     }
@@ -57,6 +63,15 @@ class ProductRepositoryTest extends TestCase
         $builder->shouldReceive('update')->once();
 
     	$updated = $this->productRepo->editProduct($input);
+    }
+
+    /** @test */
+    public function it_will_return_a_product_by_its_id(){
+        $this->products->shouldReceive('find')
+            ->once()
+            ->with(1);
+
+        $this->productRepo->findProductById(1);
     }
 
     public function tearDown(){

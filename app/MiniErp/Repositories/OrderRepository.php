@@ -1,6 +1,10 @@
 <?php
 namespace MiniErp\Repositories;
 
+use MiniErp\Entities\Order;
+use MiniErp\Constants\OrderStatus;
+use MiniErp\Constants\ItemPhysicalStatus;
+
 /**
  * The OrderRepository class manipulates the orders table.
  * It accesses some data from the items table.
@@ -11,8 +15,6 @@ namespace MiniErp\Repositories;
  * @version 0.1
  * 
  */
-use MiniErp\Entities\Order;
-
 class OrderRepository{
 
 	private $orders;
@@ -27,7 +29,7 @@ class OrderRepository{
 	 * @return Illuminate\Database\Eloquent\Collection
 	 */
 	public function getAllOrders(){
-		return $this->orders->with('items')->get();
+		return $this->orders->all();
 	}
 
 	/**
@@ -41,13 +43,19 @@ class OrderRepository{
 	}
 
 	/**
-	 * Update the status of a specified order
+	 * Change the status of this order to "Completed"
+	 * if all of its items are delivered
 	 * 
-	 * @param  array $input the $input array consists of both the order id and the new status
-	 * @return int the number of records that have been updated
+	 * @param  MiniErp\Entities\Order $order
+	 * @return boolean
 	 */
-	public function changeStatus($input){
-		return $this->orders->where('id', $input['id'])->update($input);
+	public function complete(Order $order){
+		if($this->allItemsDelivered($order)){
+			$this->orders->where('id', $order->id)->update(['status' => OrderStatus::Completed]);
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -60,6 +68,26 @@ class OrderRepository{
 	 */
 	public function makeOrder($input){
 		return $this->orders->create($input);
+	}
+
+	/**
+	 * Check if all items have been delivered for a specific order
+	 *
+	 * @param MiniErp\Entities\Order $order
+	 * @return [type] [description]
+	 */
+	public function allItemsDelivered(Order $order){
+		$orderedItems = $order->items()->get();
+
+		$deliveredItems = $orderedItems->filter(function ($item) {
+    		return $item->physical_status == ItemPhysicalStatus::Delivered;
+		});
+
+		if($deliveredItems->count() == $orderedItems->count()){
+			return true;
+		}
+
+		return false;
 	}
 
 

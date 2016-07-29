@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace MiniErp\Entities;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
